@@ -1,20 +1,24 @@
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const express = require('express');
+const dotenv = require('dotenv');
+const connectDB = require('./config/db');
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
 
-var app = express();
+const authRoutes = require('./routes/authRoutes');
+const catwaysRoutes = require('./routes/catwaysRoutes');
+const reservationsRoutes = require('./routes/reservationsRoutes');
+const usersRoutes = require('./routes/usersRoutes');
 
-app.use(logger('dev'));
+dotenv.config();
+connectDB();
+
+const app = express();
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+
+app.use('/api/auth', authRoutes);
+app.use('/api/catways', catwaysRoutes);
+app.use('/api/catways', reservationsRoutes);
+app.use('/api/users', usersRoutes);
 
 module.exports = app;
+
