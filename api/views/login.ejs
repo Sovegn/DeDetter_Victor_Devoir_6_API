@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Connexion</title>
+</head>
+<body>
+    <h1>Connexion</h1>
+    <p>Veuillez vous connecter pour accéder au tableau de bord.</p>
+    
+    <% if(locals.error) { %>
+    <div class="error">
+        <%= error %>
+    </div>
+    <% } %>
+    
+    <form action="/api/login" method="POST">
+        <div>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" placeholder="Email" required>
+        </div>
+        <div>
+            <label for="password">Mot de passe:</label>
+            <input type="password" id="password" name="password" placeholder="Mot de passe" required>
+        </div>
+        <button type="submit">Se connecter</button>
+    </form>
+    <a href="/">Retour à l'accueil</a>
+</body>
+</html>
