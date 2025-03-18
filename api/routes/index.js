@@ -16,7 +16,7 @@ const Reservation = require("../models/reservation");
 const User = require("../models/user");
 
 router.get('/', function(req, res) {
-  res.render('index');
+  res.redirect('/login');
 });
 
 // Ajout d'une route dédiée pour la page de login
