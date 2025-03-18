@@ -1,4 +1,4 @@
-// app.js (modification)
+// app.js
 const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
@@ -17,16 +17,26 @@ const app = express();
 app.set('view engine', 'ejs');
 app.set('views', __dirname + '/views');
 app.use(cors({
-    exposedHeaders:['Authorization'],
-    origin:  '*'
+    exposedHeaders: ['Authorization'],
+    origin: process.env.NODE_ENV === 'production' 
+        ? process.env.ALLOWED_ORIGINS || '*' 
+        : '*'
 }));
-app.use(logger('dev'));
+app.use(logger(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
+
+app.get('/health', (req, res) => {
+    res.status(200).json({
+        status: 'UP',
+        service: process.env.APP_NAME || 'Mon API',
+        version: '1.0'
+    });
+});
 
 // Erreur 404
 app.use(function(req, res, next) {
