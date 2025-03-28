@@ -17,10 +17,8 @@ const app = express();
 app.set('view engine', 'ejs');
 app.set('views', __dirname + '/views');
 app.use(cors({
-    exposedHeaders: ['Authorization'],
-    origin: process.env.NODE_ENV === 'production' 
-        ? process.env.ALLOWED_ORIGINS || '*' 
-        : '*'
+    exposedHeaders:['Authorization'],
+    origin:  '*'
 }));
 app.use(logger(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 app.use(express.json());
