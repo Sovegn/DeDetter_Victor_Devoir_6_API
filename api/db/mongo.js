@@ -1,15 +1,17 @@
 const mongoose = require('mongoose');
 
 const clientOptions = {
-    dbName: 'apinode'
+    dbName: process.env.MONGO_DBNAME || 'apinode'
 }
 
-exports.initClientDbConnection= async () => {
+exports.initClientDbConnection = async () => {
     try {
-        await mongoose.connect(process.env.URL_MONGO, clientOptions);
+        const mongoUri = process.env.MONGODB_URI || process.env.URL_MONGO;
+        await mongoose.connect(mongoUri, clientOptions);
         console.log('Connected to MongoDB');
     }
     catch (error) {
         console.log('MongoDB connection error:', error.message);
+        process.exit(1);
     }
 }
