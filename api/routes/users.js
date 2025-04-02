@@ -1,9 +1,14 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
+const userService = require('../services/users');
+const private = require('../middlewares/private');
 
-/* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
-});
+// Routes API pour les utilisateurs
+router.get('/', private.checkJWT, userService.getAll);
+router.get('/:email', private.checkJWT, userService.getByEmail);
+router.post('/', userService.add);
+router.put('/:email', private.checkJWT, userService.update);
+router.delete('/:email', private.checkJWT, userService.delete);
+router.post('/authenticate', userService.authenticate);
 
 module.exports = router;
