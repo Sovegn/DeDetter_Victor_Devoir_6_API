@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestion des Catways</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <h1>Catways</h1>
+    <a href="/dashboard">Retour au Tableau de Bord</a>
+
+    <h2>Liste des Catways</h2>
+    <table>
+        <tr><th>Numéro</th><th>Type</th><th>État</th><th>Actions</th></tr>
+        <% catways.forEach(c => { %>
+            <tr>
+                <td><%= c.catwayNumber %></td>
+                <td><%= c.catwayType %></td>
+                <td><%= c.catwayState %></td>
+                <td>
+                    <a href="/catways/edit/<%= c.catwayNumber %>">Modifier</a> |
+                    <a href="#" onclick="deleteCatway('<%= c.catwayNumber %>')">Supprimer</a>
+                </td>
+            </tr>
+        <% }) %>
+    </table>
+
+    <h2>Ajouter un Catway</h2>
+    <form id="addCatwayForm">
+        <input type="number" name="catwayNumber" placeholder="Numéro" required>
+        <select name="catwayType">
+            <option value="long">Long</option>
+            <option value="short">Short</option>
+        </select>
+        <input type="text" name="catwayState" placeholder="État" required>
+        <button type="submit">Ajouter</button>
+    </form>
+
+    <script>
+       document.getElementById('addCatwayForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = {
+            catwayNumber: this.catwayNumber.value,
+            catwayType: this.catwayType.value,
+            catwayState: this.catwayState.value
+        };
+        
+        fetch('/api/catways', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => {
+            if (response.ok) {
+                window.location.reload();
+            } else {
+                return response.text().then(text => {
+                    throw new Error(text || 'Erreur inconnue');
+                });
+            }
+        })
+        .catch(error => {
+            alert('Erreur lors de l\'ajout: ' + error.message);
+        });
+    });
+
+        function deleteCatway(catwayNumber) {
+    if (confirm("Êtes-vous sûr de vouloir supprimer ce catway ?")) {
+        fetch(`/api/catways/${catwayNumber}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                window.location.reload();
+            } else {
+                return response.text().then(text => {
+                    throw new Error(text || 'Erreur inconnue');
+                });
+            }
+        })
+        .catch(error => {
+            alert('Erreur lors de la suppression: ' + error.message);
+        });
+    }
+}
+    </script>
+</body>
+</html>

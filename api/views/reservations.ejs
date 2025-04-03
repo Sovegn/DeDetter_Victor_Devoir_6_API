@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestion des Réservations</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <h1>Réservations</h1>
+    <a href="/dashboard">Retour au Tableau de Bord</a>
+
+    <h2>Liste des Réservations</h2>
+    <table>
+        <tr><th>Client</th><th>Bateau</th><th>Catway</th><th>Début</th><th>Fin</th><th>Actions</th></tr>
+        <% reservations.forEach(r => { %>
+            <tr>
+                <td><%= r.clientName %></td>
+                <td><%= r.boatName %></td>
+                <td><%= r.catwayNumber %></td>
+                <td><%= new Date(r.startDate).toLocaleDateString() %></td>
+                <td><%= new Date(r.endDate).toLocaleDateString() %></td>
+                <td>
+                    <a href="/reservations/edit/<%= r.catwayNumber %>/<%= r._id %>">Modifier</a> |
+                    <a href="#" onclick="deleteReservation('<%= r.catwayNumber %>', '<%= r._id %>')">Supprimer</a>
+                </td>
+            </tr>
+        <% }) %>
+    </table>
+
+    <h2>Ajouter une Réservation</h2>
+    <form id="addReservationForm">
+        <input type="text" name="clientName" placeholder="Nom du Client" required>
+        <input type="text" name="boatName" placeholder="Nom du Bateau" required>
+        <input type="number" name="catwayNumber" placeholder="Numéro du Catway" required>
+        <input type="date" name="startDate" required>
+        <input type="date" name="endDate" required>
+        <button type="submit">Ajouter</button>
+    </form>
+
+    <script>
+        document.getElementById('addReservationForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = {
+        clientName: this.clientName.value,
+        boatName: this.boatName.value,
+        startDate: this.startDate.value,
+        endDate: this.endDate.value
+    };
+    
+    const catwayNumber = this.catwayNumber.value;
+    
+    fetch(`/api/catways/${catwayNumber}/reservations`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(response => {
+        if (response.ok) {
+            window.location.reload();
+        } else {
+            return response.text().then(text => {
+                throw new Error(text || 'Erreur inconnue');
+            });
+        }
+    })
+    .catch(error => {
+        alert('Erreur lors de l\'ajout: ' + error.message);
+    });
+});
+        
+        function deleteReservation(catwayNumber, reservationId) {
+    if (confirm("Êtes-vous sûr de vouloir supprimer cette réservation ?")) {
+        fetch(`/api/catways/${catwayNumber}/reservations/${reservationId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                window.location.reload();
+            } else {
+                return response.text().then(text => {
+                    throw new Error(text || 'Erreur inconnue');
+                });
+            }
+        })
+        .catch(error => {
+            alert('Erreur lors de la suppression: ' + error.message);
+        });
+    }
+}
+    </script>
+</body>
+</html>

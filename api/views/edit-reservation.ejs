@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Modifier Réservation</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <h1>Modifier Réservation</h1>
+    <a href="/reservations">Retour à la liste des Réservations</a>
+
+    <div class="form-container">
+        <h2>Réservation pour <%= reservation.clientName %></h2>
+        <form id="editReservationForm">
+            <div class="form-group">
+                <label>Client:</label>
+                <input type="text" name="clientName" value="<%= reservation.clientName %>" required>
+            </div>
+            <div class="form-group">
+                <label>Bateau:</label>
+                <input type="text" name="boatName" value="<%= reservation.boatName %>" required>
+            </div>
+            <div class="form-group">
+                <label>Catway:</label>
+                <input type="number" name="catwayNumber" value="<%= reservation.catwayNumber %>" disabled>
+            </div>
+            <div class="form-group">
+                <label>Date de début:</label>
+                <input type="date" name="startDate" value="<%= new Date(reservation.startDate).toISOString().split('T')[0] %>" required>
+            </div>
+            <div class="form-group">
+                <label>Date de fin:</label>
+                <input type="date" name="endDate" value="<%= new Date(reservation.endDate).toISOString().split('T')[0] %>" required>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn-primary">Enregistrer les modifications</button>
+                <a href="/reservations" class="btn-secondary">Annuler</a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('editReservationForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = {
+        clientName: this.clientName.value,
+        boatName: this.boatName.value,
+        startDate: this.startDate.value,
+        endDate: this.endDate.value
+    };
+    
+    fetch('/api/catways/<%= reservation.catwayNumber %>/reservations/<%= reservation._id %>', {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(response => {
+        if (response.ok) {
+            window.location.href = '/reservations';
+        } else {
+            return response.text().then(text => {
+                throw new Error(text || 'Erreur inconnue');
+            });
+        }
+    })
+    .catch(error => {
+        alert('Erreur lors de la mise à jour: ' + error.message);
+        console.error('Erreur:', error);
+    });
+});
+    </script>
+</body>
+</html>
