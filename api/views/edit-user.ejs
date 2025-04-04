@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Modifier Utilisateur</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <h1>Modifier Utilisateur</h1>
+    <a href="/users">Retour à la liste des Utilisateurs</a>
+
+    <div class="form-container">
+        <h2>Utilisateur <%= userToEdit.username %></h2>
+        <form id="editUserForm">
+            <div class="form-group">
+                <label>Email:</label>
+                <input type="email" value="<%= userToEdit.email %>" disabled>
+                <p class="form-help">L'email ne peut pas être modifié</p>
+            </div>
+            <div class="form-group">
+                <label>Nom d'utilisateur:</label>
+                <input type="text" name="username" value="<%= userToEdit.username %>" required>
+            </div>
+            <div class="form-group">
+                <label>Nouveau mot de passe:</label>
+                <input type="password" name="password" placeholder="Laisser vide pour ne pas changer">
+                <p class="form-help">Laisser vide pour conserver le mot de passe actuel</p>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn-primary">Enregistrer les modifications</button>
+                <a href="/users" class="btn-secondary">Annuler</a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('editUserForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                username: this.username.value
+            };
+            
+            // N'inclure le mot de passe que s'il a été saisi
+            if (this.password.value.trim()) {
+                formData.password = this.password.value;
+            }
+            
+            fetch('/api/users/<%= userToEdit.email %>', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = '/users';
+                } else {
+                    return response.json().then(err => {
+                        throw new Error(err);
+                    });
+                }
+            })
+            .catch(error => {
+                alert('Erreur lors de la mise à jour: ' + error.message);
+                console.error('Erreur:', error);
+            });
+        });
+    </script>
+</body>
+</html>

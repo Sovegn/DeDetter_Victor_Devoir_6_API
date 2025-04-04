@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Tableau de Bord</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <h1>Tableau de Bord</h1>
+    <p>Bienvenue, <%= user.username %> (<%= user.email %>)</p>
+    <p>Date du jour : <%= date.toLocaleDateString() %></p>
+
+    <h2>Réservations en cours</h2>
+    <table>
+        <tr><th>Client</th><th>Bateau</th><th>Catway</th><th>Début</th><th>Fin</th></tr>
+        <% reservations.forEach(res => { %>
+            <tr>
+                <td><%= res.clientName %></td>
+                <td><%= res.boatName %></td>
+                <td><%= res.catwayNumber %></td>
+                <td><%= res.startDate %></td>
+                <td><%= res.endDate %></td>
+            </tr>
+        <% }) %>
+    </table>
+
+    <nav>
+        <a href="/catways">Gérer les Catways</a> |
+        <a href="/reservations">Gérer les Réservations</a> |
+        <a href="/users">Gérer les Utilisateurs</a> |
+        <a href="/api-docs">Documentation</a> |
+        <a href="/api/logout">Se déconnecter</a>
+    </nav>
+</body>
+</html>

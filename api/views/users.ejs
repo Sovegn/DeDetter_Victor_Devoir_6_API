@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestion des Utilisateurs</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <h1>Utilisateurs</h1>
+    <a href="/dashboard">Retour au Tableau de Bord</a>
+
+    <h2>Liste des Utilisateurs</h2>
+    <table>
+        <tr><th>Nom</th><th>Email</th><th>Actions</th></tr>
+        <% users.forEach(u => { %>
+            <tr>
+                <td><%= u.username %></td>
+                <td><%= u.email %></td>
+                <td>
+                    <a href="/users/edit/<%= u.email %>">Modifier</a> |
+                    <a href="#" onclick="deleteUser('<%= u.email %>')">Supprimer</a>
+                </td>
+            </tr>
+        <% }) %>
+    </table>
+
+    <h2>Ajouter un Utilisateur</h2>
+    <form id="addUserForm">
+        <input type="text" name="username" placeholder="Nom d'utilisateur" required>
+        <input type="email" name="email" placeholder="Email" required>
+        <input type="password" name="password" placeholder="Mot de passe" required>
+        <button type="submit">Ajouter</button>
+    </form>
+
+    <script>
+        document.getElementById('addUserForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                username: this.username.value,
+                email: this.email.value,
+                password: this.password.value
+            };
+            
+            fetch('/api/users', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => {
+                if (response.ok) {
+                    window.location.reload();
+                } else {
+                    return response.json().then(err => {
+                        throw new Error(err);
+                    });
+                }
+            })
+            .catch(error => {
+                alert('Erreur lors de l\'ajout: ' + error);
+            });
+        });
+        
+        function deleteUser(email) {
+            if (confirm("Êtes-vous sûr de vouloir supprimer cet utilisateur ?")) {
+                fetch(`/api/users/${email}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.reload();
+                    } else {
+                        return response.json().then(err => {
+                            throw new Error(err);
+                        });
+                    }
+                })
+                .catch(error => {
+                    alert('Erreur lors de la suppression: ' + error.message);
+                });
+            }
+        }
+    </script>
+</body>
+</html>
